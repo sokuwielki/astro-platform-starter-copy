@@ -23,7 +23,60 @@ Informacje o okolicy:\n
     <ContextAlert class="mb-4" />
     <h1 class="mb-10">Wynajem Dobowy Agnik</h1>
     <Markdown content={explainer} class="text-lg mb-10" />
-    /*<p class="mb-8">
-        <a href="https://docs.netlify.com/frameworks/astro/" class="btn btn-lg btn-primary sm:btn-wide">Read the Docs</a>
-    </p>*/
+
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-info">
+      <h2>Hotel Name</h2>
+      <p>© 2024 Hotel Name. All rights reserved.</p>
+    </div>
+    
+    <div class="footer-contact">
+      <p>📍 123 Main Street, City, Country</p>
+      <p>📞 <a href="tel:+123456789">+1 234 567 89</a></p>
+      <p>📧 <a href="mailto:info@hotel.com">info@hotel.com</a></p>
+    </div>
+    
+    <div class="footer-social">
+      <a href="https://facebook.com" target="_blank" aria-label="Facebook">📘</a>
+      <a href="https://twitter.com" target="_blank" aria-label="Twitter">🐦</a>
+      <a href="https://instagram.com" target="_blank" aria-label="Instagram">📷</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: #222;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .footer-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-contact a {
+    color: #f8c01c;
+    text-decoration: none;
+  }
+
+  .footer-social a {
+    margin: 0 10px;
+    font-size: 20px;
+  }
+
+  @media (min-width: 600px) {
+    .footer-container {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+  }
+</style>
+
 </Layout>
