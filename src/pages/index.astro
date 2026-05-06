@@ -23,7 +23,7 @@ Cena: 200zł, do negocjacji.
 ---
 
 <Layout title="Wynajem">
-    <!-- Header stays the same as previous response -->
+    <!-- Header -->
     <header class="fixed top-0 left-0 w-full bg-white shadow-md z-40 py-4 px-6 flex flex-wrap justify-between items-center gap-4">
         <h2 class="text-xl font-bold text-[#355C7D] order-1">Agnik</h2>
         <div class="flex gap-4 order-3 sm:order-2 w-full sm:w-auto justify-center">
@@ -35,11 +35,12 @@ Cena: 200zł, do negocjacji.
         </button>
     </header>
 
-    <div class="mt-24 px-4">
+    <main class="mt-32 px-4 max-w-6xl mx-auto">
         <ContextAlert class="mb-4" />
         <h1 class="mb-10 text-4xl font-bold text-center">Wynajem Dobowy Agnik</h1>
         <Markdown content={explainer} class="text-lg mb-10" />
 
+        <!-- 📷 Picture Grid -->
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             <img src="/assets/inna-sofa.jpg" alt="Sofa" class="grid-img" />
             <img src="/assets/kuchnia.jpg" alt="Kuchnia" class="grid-img" />
@@ -50,61 +51,64 @@ Cena: 200zł, do negocjacji.
             <img src="/assets/stolik-telewizor.jpg" alt="Stolik z telewizorem" class="grid-img" />
             <img src="/assets/szafa.jpg" alt="Szafa z lustrem" class="grid-img" />
         </section>
-    </div>
+    </main>
 
-    <!-- Modal for Documents -->
+    <!-- 📄 Document Modal (Regulamin/Umowa) -->
     <div id="doc-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative text-gray-900">
             <button id="close-doc" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-black">✖</button>
             <div class="p-8 overflow-y-auto">
                 <h2 id="doc-title" class="text-2xl font-bold mb-4 text-[#355C7D]"></h2>
-                <div id="doc-content" class="text-gray-700 leading-relaxed">
-                    <!-- Component HTML will be injected here -->
-                </div>
+                <div id="doc-content" class="text-gray-700 leading-relaxed"></div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden Storage for Astro Component HTML -->
-    <div id="source-regulamin" class="hidden">
-        <RegulaminContent />
+    <!-- 📅 Calendar Modal -->
+    <div id="calendar-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-gray-900">
+            <div class="bg-[#355C7D] p-4 text-white flex justify-between items-center">
+                <button id="prev-month" class="p-2">◀</button>
+                <h3 id="month-label" class="font-bold uppercase tracking-wider"></h3>
+                <button id="next-month" class="p-2">▶</button>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-7 gap-1 text-center font-bold text-gray-400 mb-2 text-xs uppercase">
+                    <div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>So</div><div>Nd</div>
+                </div>
+                <div id="calendar-days" class="grid grid-cols-7 gap-1 text-center"></div>
+                <button id="close-calendar" class="mt-6 w-full py-2 border-2 border-[#355C7D] text-[#355C7D] font-bold rounded-lg hover:bg-[#355C7D] hover:text-white transition-all">Zamknij</button>
+            </div>
+        </div>
     </div>
-    <div id="source-umowa" class="hidden">
-        <UmowaContent />
+
+    <!-- 🔍 Fullscreen Image Viewer (Lightbox) -->
+    <div id="lightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[100]">
+        <img id="lightbox-img" class="max-w-full max-h-full rounded-lg" src="" alt="" />
+        <button id="close-lightbox" class="absolute top-4 right-6 text-white text-3xl cursor-pointer">✖</button>
+        <button id="prev-btn" class="absolute left-6 text-white text-5xl cursor-pointer p-4">◀</button>
+        <button id="next-btn" class="absolute right-6 text-white text-5xl cursor-pointer p-4">▶</button>
     </div>
+
+    <!-- Hidden Storage for Document Content -->
+    <div id="source-regulamin" class="hidden"><RegulaminContent /></div>
+    <div id="source-umowa" class="hidden"><UmowaContent /></div>
 
     <script is:inline>
-        // Updated Document Modal Logic
-        function openDoc(type) {
-            const title = type === 'regulamin' ? 'Regulamin' : 'Umowa';
-            const sourceId = `source-${type}`;
-            const content = document.getElementById(sourceId).innerHTML;
+        let currentMonth = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
-            document.getElementById('doc-title').innerText = title;
-            document.getElementById('doc-content').innerHTML = content;
-            document.getElementById('doc-modal').classList.remove('hidden');
-        }
-
-        document.getElementById('open-regulamin')?.addEventListener('click', () => openDoc('regulamin'));
-        document.getElementById('open-umowa')?.addEventListener('click', () => openDoc('umowa'));
-        
-        document.getElementById('close-doc')?.addEventListener('click', () => {
-            document.getElementById('doc-modal').classList.add('hidden');
-        });
-
-        // Close on clicking backdrop
-        document.getElementById('doc-modal')?.addEventListener('click', (e) => {
-            if (e.target.id === 'doc-modal') e.target.classList.add('hidden');
-        });
-
-       // --- CALENDAR LOGIC ---
+        // --- 1. CALENDAR LOGIC ---
         async function renderCalendar() {
             let bookedDates = [];
             try {
                 const res = await fetch('/availability.json');
-                const data = await res.json();
-                bookedDates = data.bookedDates || [];
-            } catch (e) { console.log("Availability file missing"); }
+                if (res.ok) {
+                    const data = await res.json();
+                    bookedDates = data.bookedDates || [];
+                }
+            } catch (e) { console.log("No availability file"); }
 
             const daysContainer = document.getElementById('calendar-days');
             const monthLabel = document.getElementById('month-label');
@@ -135,9 +139,9 @@ Cena: 200zł, do negocjacji.
                 dayEl.className = "py-3 rounded-md text-sm font-medium border ";
                 dayEl.innerText = d;
 
-                if (isPast) dayEl.className += "bg-gray-100 text-gray-400";
+                if (isPast) dayEl.className += "bg-gray-100 text-gray-400 cursor-not-allowed";
                 else if (isBooked) dayEl.className += "bg-red-100 text-red-700 border-red-200 line-through";
-                else dayEl.className += "bg-green-50 text-green-700 border-green-200 cursor-pointer";
+                else dayEl.className += "bg-green-50 text-green-700 border-green-200";
 
                 daysContainer.appendChild(dayEl);
             }
@@ -146,6 +150,52 @@ Cena: 200zł, do negocjacji.
                 prevBtn.style.visibility = (month === today.getMonth() && year === today.getFullYear()) ? 'hidden' : 'visible';
             }
         }
+
+        // --- 2. LIGHTBOX LOGIC ---
+        const images = Array.from(document.querySelectorAll('.grid-img'));
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        let currentIndex = 0;
+
+        function showImage(index) {
+            currentIndex = index;
+            lightboxImg.src = images[index].src;
+            lightbox.classList.remove('hidden');
+        }
+
+        images.forEach((img, idx) => img.addEventListener('click', () => showImage(idx)));
+        document.getElementById('close-lightbox')?.addEventListener('click', () => lightbox.classList.add('hidden'));
+        document.getElementById('next-btn')?.addEventListener('click', () => showImage((currentIndex + 1) % images.length));
+        document.getElementById('prev-btn')?.addEventListener('click', () => showImage((currentIndex - 1 + images.length) % images.length));
+
+        // --- 3. DOCUMENT MODAL LOGIC ---
+        function openDoc(type) {
+            const title = type === 'regulamin' ? 'Regulamin' : 'Umowa';
+            const sourceId = `source-${type}`;
+            document.getElementById('doc-title').innerText = title;
+            document.getElementById('doc-content').innerHTML = document.getElementById(sourceId).innerHTML;
+            document.getElementById('doc-modal').classList.remove('hidden');
+        }
+
+        // --- 4. GLOBAL EVENT LISTENERS ---
+        document.getElementById('open-calendar')?.addEventListener('click', () => {
+            document.getElementById('calendar-modal').classList.remove('hidden');
+            renderCalendar();
+        });
+        document.getElementById('close-calendar')?.addEventListener('click', () => document.getElementById('calendar-modal').classList.add('hidden'));
+        document.getElementById('next-month')?.addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth() + 1); renderCalendar(); });
+        document.getElementById('prev-month')?.addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth() - 1); renderCalendar(); });
+        
+        document.getElementById('open-regulamin')?.addEventListener('click', () => openDoc('regulamin'));
+        document.getElementById('open-umowa')?.addEventListener('click', () => openDoc('umowa'));
+        document.getElementById('close-doc')?.addEventListener('click', () => document.getElementById('doc-modal').classList.add('hidden'));
+
+        // Background click to close
+        window.onclick = (event) => {
+            if (event.target == lightbox) lightbox.classList.add('hidden');
+            if (event.target.id == 'doc-modal') event.target.classList.add('hidden');
+            if (event.target.id == 'calendar-modal') event.target.classList.add('hidden');
+        };
     </script>
 
     <style>
@@ -153,7 +203,7 @@ Cena: 200zł, do negocjacji.
             @apply text-gray-600 hover:text-[#355C7D] font-medium border-b-2 border-transparent hover:border-[#355C7D] transition-all cursor-pointer;
         }
         .grid-img {
-            @apply rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer;
+            @apply rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer w-full h-64 object-cover;
         }
     </style>
 </Layout>
