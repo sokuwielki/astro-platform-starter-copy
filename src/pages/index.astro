@@ -2,11 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import ContextAlert from '../components/ContextAlert.astro';
 import Markdown from '../components/Markdown.astro';
-// Import your content files
 import RegulaminContent from '../pages/regulamin.astro';
 import UmowaContent from '../pages/umowa.astro';
 
-`
+const explainer = `
 Kawalerka - wynajem krótko terminowy.
 
 Informacje o obiekcie:
@@ -36,7 +35,22 @@ Cena: 200zł, do negocjacji.
         </button>
     </header>
 
-    <!-- ... rest of your body content ... -->
+    <div class="mt-24 px-4">
+        <ContextAlert class="mb-4" />
+        <h1 class="mb-10 text-4xl font-bold text-center">Wynajem Dobowy Agnik</h1>
+        <Markdown content={explainer} class="text-lg mb-10" />
+
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+            <img src="/assets/inna-sofa.jpg" alt="Sofa" class="grid-img" />
+            <img src="/assets/kuchnia.jpg" alt="Kuchnia" class="grid-img" />
+            <img src="/assets/laizenka.jpg" alt="Łazienka" class="grid-img" />
+            <img src="/assets/prysznic.jpg" alt="Prysznic" class="grid-img" />
+            <img src="/assets/sofa-lozko.jpg" alt="Łóżko" class="grid-img" />
+            <img src="/assets/sofa-stolik.jpg" alt="Przestrzeń wspólna" class="grid-img" />
+            <img src="/assets/stolik-telewizor.jpg" alt="Stolik z telewizorem" class="grid-img" />
+            <img src="/assets/szafa.jpg" alt="Szafa z lustrem" class="grid-img" />
+        </section>
+    </div>
 
     <!-- Modal for Documents -->
     <div id="doc-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
