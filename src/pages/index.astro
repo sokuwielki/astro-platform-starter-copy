@@ -147,12 +147,16 @@ Cena: 200zł, do negocjacji.
                     const isBooked = bookedDates.includes(dateStr);
 
                     const dayEl = document.createElement('div');
-                    dayEl.className = "py-3 rounded-md text-sm font-medium border ";
-                    dayEl.innerText = d;
+                    dayEl.className = "py-3 rounded-md text-sm font-medium border";
+                    dayEl.textContent = String(d); // Using textContent + String conversion is safer
 
-                    if (isPast) dayEl.className += "bg-gray-100 text-gray-400 cursor-not-allowed";
-                    else if (isBooked) dayEl.className += "bg-red-100 text-red-700 border-red-200 line-through";
-                    else dayEl.className += "bg-green-50 text-green-700 border-green-200";
+                    if (isPast) {
+                        dayEl.classList.add("bg-gray-100", "text-gray-400", "cursor-not-allowed");
+                    } else if (isBooked) {
+                        dayEl.classList.add("bg-red-100", "text-red-700", "border-red-200", "line-through");
+                    } else {
+                        dayEl.classList.add("bg-green-50", "text-green-700", "border-green-200");
+                    }
 
                     daysContainer.appendChild(dayEl);
                 }
