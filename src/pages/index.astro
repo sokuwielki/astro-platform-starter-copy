@@ -4,6 +4,15 @@ import ContextAlert from '../components/ContextAlert.astro';
 import Markdown from '../components/Markdown.astro';
 import RegulaminContent from '../pages/regulamin.astro';
 import UmowaContent from '../pages/umowa.astro';
+import { Image } from 'astro:assets';
+import imgSofa from '../assets/inna-sofa.jpg';
+import imgKuchnia from '../assets/kuchnia.jpg';
+import imgLazienka from '../assets/laizenka.jpg';
+import imgPrysznic from '../assets/prysznic.jpg';
+import imgLozko from '../assets/sofa-lozko.jpg';
+import imgStolik from '../assets/sofa-stolik.jpg';
+import imgTV from '../assets/stolik-telewizor.jpg';
+import imgSzafa from '../assets/szafa.jpg';
 
 const explainer = `
 Kawalerka - wynajem krótko terminowy.
@@ -40,16 +49,16 @@ Cena: 200zł, do negocjacji.
         <h1 class="mb-10 text-4xl font-bold text-center">Wynajem Dobowy Agnik</h1>
         <Markdown content={explainer} class="text-lg mb-10" />
 
-        <!-- 📷 Picture Grid -->
+        <!-- 📷 Optimized Picture Grid -->
         <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            <img src="/assets/inna-sofa.jpg" alt="Sofa" class="grid-img" />
-            <img src="/assets/kuchnia.jpg" alt="Kuchnia" class="grid-img" />
-            <img src="/assets/laizenka.jpg" alt="Łazienka" class="grid-img" />
-            <img src="/assets/prysznic.jpg" alt="Prysznic" class="grid-img" />
-            <img src="/assets/sofa-lozko.jpg" alt="Łóżko" class="grid-img" />
-            <img src="/assets/sofa-stolik.jpg" alt="Przestrzeń wspólna" class="grid-img" />
-            <img src="/assets/stolik-telewizor.jpg" alt="Stolik z telewizorem" class="grid-img" />
-            <img src="/assets/szafa.jpg" alt="Szafa z lustrem" class="grid-img" />
+            <Image src={imgSofa} alt="Sofa" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgKuchnia} alt="Kuchnia" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgLazienka} alt="Łazienka" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgPrysznic} alt="Prysznic" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgLozko} alt="Łóżko" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgStolik} alt="Przestrzeń wspólna" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgTV} alt="Stolik z telewizorem" width={1200} height={900} format="webp" class="grid-img" />
+            <Image src={imgSzafa} alt="Szafa z lustrem" width={1200} height={900} format="webp" class="grid-img" />
         </section>
     </main>
 
@@ -94,62 +103,93 @@ Cena: 200zł, do negocjacji.
     <div id="source-regulamin" class="hidden"><RegulaminContent /></div>
     <div id="source-umowa" class="hidden"><UmowaContent /></div>
 
-    <script is:inline>
-        let currentMonth = new Date();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        <script is:inline>
+            let currentMonth = new Date();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
-        // --- 1. CALENDAR LOGIC ---
-        async function renderCalendar() {
-            let bookedDates = [];
-            try {
-                const res = await fetch('/availability.json');
-                if (res.ok) {
-                    const data = await res.json();
-                    bookedDates = data.bookedDates || [];
+            // 1. The core function that draws the calendar
+            async function renderCalendar() {
+                let bookedDates = [];
+                try {
+                    const res = await fetch('/availability.json');
+                    if (res.ok) {
+                        const data = await res.json();
+                        bookedDates = data.bookedDates || [];
+                    }
+                } catch (e) { console.log("No availability file"); }
+
+                const daysContainer = document.getElementById('calendar-days');
+                const monthLabel = document.getElementById('month-label');
+                const prevBtn = document.getElementById('prev-month');
+                
+                if (!daysContainer || !monthLabel) return;
+
+                // CRITICAL: This clears the old month before drawing the new one
+                daysContainer.innerHTML = ''; 
+                
+                monthLabel.innerText = currentMonth.toLocaleString('pl-PL', { month: 'long', year: 'numeric' });
+
+                const year = currentMonth.getFullYear();
+                const month = currentMonth.getMonth();
+                let firstDay = new Date(year, month, 1).getDay();
+                firstDay = firstDay === 0 ? 6 : firstDay - 1; 
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                for (let i = 0; i < firstDay; i++) {
+                    daysContainer.appendChild(document.createElement('div'));
                 }
-            } catch (e) { console.log("No availability file"); }
 
-            const daysContainer = document.getElementById('calendar-days');
-            const monthLabel = document.getElementById('month-label');
-            const prevBtn = document.getElementById('prev-month');
-            
-            if (!daysContainer || !monthLabel) return;
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const dateObj = new Date(year, month, d);
+                    const dateStr = dateObj.toISOString().split('T')[0];
+                    const isPast = dateObj < today;
+                    const isBooked = bookedDates.includes(dateStr);
 
-            daysContainer.innerHTML = '';
-            monthLabel.innerText = currentMonth.toLocaleString('pl-PL', { month: 'long', year: 'numeric' });
+                    const dayEl = document.createElement('div');
+                    dayEl.className = "py-3 rounded-md text-sm font-medium border ";
+                    dayEl.innerText = d;
 
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            let firstDay = new Date(year, month, 1).getDay();
-            firstDay = firstDay === 0 ? 6 : firstDay - 1; 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    if (isPast) dayEl.className += "bg-gray-100 text-gray-400 cursor-not-allowed";
+                    else if (isBooked) dayEl.className += "bg-red-100 text-red-700 border-red-200 line-through";
+                    else dayEl.className += "bg-green-50 text-green-700 border-green-200";
 
-            for (let i = 0; i < firstDay; i++) {
-                daysContainer.appendChild(document.createElement('div'));
+                    daysContainer.appendChild(dayEl);
+                }
+
+                if (prevBtn) {
+                    // Hide previous button if we are looking at the current month
+                    prevBtn.style.visibility = (month === today.getMonth() && year === today.getFullYear()) ? 'hidden' : 'visible';
+                }
             }
 
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(year, month, d);
-                const dateStr = dateObj.toISOString().split('T')[0];
-                const isPast = dateObj < today;
-                const isBooked = bookedDates.includes(dateStr);
+            // --- EVENT LISTENERS ---
 
-                const dayEl = document.createElement('div');
-                dayEl.className = "py-3 rounded-md text-sm font-medium border ";
-                dayEl.innerText = d;
+            // Open Calendar
+            document.getElementById('open-calendar')?.addEventListener('click', () => {
+                document.getElementById('calendar-modal').classList.remove('hidden');
+                renderCalendar(); // Initial draw
+            });
 
-                if (isPast) dayEl.className += "bg-gray-100 text-gray-400 cursor-not-allowed";
-                else if (isBooked) dayEl.className += "bg-red-100 text-red-700 border-red-200 line-through";
-                else dayEl.className += "bg-green-50 text-green-700 border-green-200";
+            // Next Month
+            document.getElementById('next-month')?.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevents modal from accidental closing
+                currentMonth.setMonth(currentMonth.getMonth() + 1);
+                renderCalendar(); // <--- This redraws the UI immediately!
+            });
 
-                daysContainer.appendChild(dayEl);
-            }
+            // Previous Month
+            document.getElementById('prev-month')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                currentMonth.setMonth(currentMonth.getMonth() - 1);
+                renderCalendar(); // <--- This redraws the UI immediately!
+            });
 
-            if (prevBtn) {
-                prevBtn.style.visibility = (month === today.getMonth() && year === today.getFullYear()) ? 'hidden' : 'visible';
-            }
-        }
+            // Close buttons
+            document.getElementById('close-calendar')?.addEventListener('click', () => {
+                document.getElementById('calendar-modal').classList.add('hidden');
+            });
+        </script>
 
         // --- 2. LIGHTBOX LOGIC ---
         const images = Array.from(document.querySelectorAll('.grid-img'));
@@ -159,7 +199,7 @@ Cena: 200zł, do negocjacji.
 
         function showImage(index) {
             currentIndex = index;
-            lightboxImg.src = images[index].src;
+            lightboxImg.src = images[index].getAttribute('src'); 
             lightbox.classList.remove('hidden');
         }
 
