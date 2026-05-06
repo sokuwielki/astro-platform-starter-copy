@@ -125,8 +125,10 @@ Cena: 200zł, do negocjacji.\n
             }
 
             // Disable back button if viewing current month
-            (document.getElementById('prev-month') as HTMLButtonElement).disabled = 
-                month === today.getMonth() && year === today.getFullYear();
+            const prevBtn = document.getElementById('prev-month');
+            if (prevBtn instanceof HTMLButtonElement) {
+                prevBtn.disabled = month === today.getMonth() && year === today.getFullYear();
+            }
         }
 
         // Event Listeners
