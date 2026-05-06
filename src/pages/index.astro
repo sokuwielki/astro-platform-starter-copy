@@ -2,189 +2,80 @@
 import Layout from '../layouts/Layout.astro';
 import ContextAlert from '../components/ContextAlert.astro';
 import Markdown from '../components/Markdown.astro';
+// Import your content files
+import RegulaminContent from '../components/RegulaminContent.astro';
+import UmowaContent from '../components/UmowaContent.astro';
 
-const explainer = `
-Kawalerka - wynajem krótko terminowy.
-
-Informacje o obiekcie:
-- Adres: Graniczna 11, Świętochłowice, Polska
-- Kawalerka znajduje się w Świętochłowicach (Lipiny) w nowowyremontowanej kamienicy na 2 piętrze z windą
-- Wyposażony w aneks kuchenny z salonem, mały pokoik z łóżkiem i łazienkę.
-- Bezpłatne WiFi
-- Obiekt monitorowany
-
-Informacje o okolicy:
-- Bardzo blisko do: Katowice, Gliwice, Zabrze, Bytom i Chorzów
-- Blisko sklepy
-Cena: 200zł, do negocjacji.
-`;
+const explainer = `...your text...`;
 ---
 
 <Layout title="Wynajem">
-    <!-- 1. Centered Header -->
+    <!-- Header stays the same as previous response -->
     <header class="fixed top-0 left-0 w-full bg-white shadow-md z-40 py-4 px-6 flex flex-wrap justify-between items-center gap-4">
         <h2 class="text-xl font-bold text-[#355C7D] order-1">Agnik</h2>
-        
-        <!-- Center Buttons -->
         <div class="flex gap-4 order-3 sm:order-2 w-full sm:w-auto justify-center">
-            <button id="open-regulamin" class="text-gray-600 hover:text-[#355C7D] font-medium border-b-2 border-transparent hover:border-[#355C7D] transition-all">Regulamin</button>
-            <button id="open-umowa" class="text-gray-600 hover:text-[#355C7D] font-medium border-b-2 border-transparent hover:border-[#355C7D] transition-all">Umowa</button>
+            <button id="open-regulamin" class="nav-link">Regulamin</button>
+            <button id="open-umowa" class="nav-link">Umowa</button>
         </div>
-
-        <button id="open-calendar" class="bg-[#355C7D] text-white px-5 py-2 rounded-full hover:bg-[#2a4a63] transition-colors order-2 sm:order-3">
+        <button id="open-calendar" class="bg-[#355C7D] text-white px-5 py-2 rounded-full order-2 sm:order-3">
             Sprawdź dostępność
         </button>
     </header>
 
-    <div class="mt-32 px-4">
-        <ContextAlert class="mb-4" />
-        <h1 class="mb-10 text-4xl font-bold text-center">Wynajem Dobowy Agnik</h1>
-        <Markdown content={explainer} class="text-lg mb-10" />
+    <!-- ... rest of your body content ... -->
 
-        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            <img src="/assets/inna-sofa.jpg" alt="Sofa" class="grid-img" />
-            <img src="/assets/kuchnia.jpg" alt="Kuchnia" class="grid-img" />
-            <img src="/assets/laizenka.jpg" alt="Łazienka" class="grid-img" />
-            <img src="/assets/prysznic.jpg" alt="Prysznic" class="grid-img" />
-            <img src="/assets/sofa-lozko.jpg" alt="Łóżko" class="grid-img" />
-            <img src="/assets/sofa-stolik.jpg" alt="Przestrzeń wspólna" class="grid-img" />
-            <img src="/assets/stolik-telewizor.jpg" alt="Stolik z telewizorem" class="grid-img" />
-            <img src="/assets/szafa.jpg" alt="Szafa z lustrem" class="grid-img" />
-        </section>
-    </div>
-
-    <!-- Modals for Documents -->
+    <!-- Modal for Documents -->
     <div id="doc-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-y-auto p-8 relative">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col relative">
             <button id="close-doc" class="absolute top-4 right-4 text-2xl text-gray-400 hover:text-black">✖</button>
-            <h2 id="doc-title" class="text-2xl font-bold mb-4 text-[#355C7D]"></h2>
-            <div id="doc-content" class="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                <!-- Content injected here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Calendar Modal -->
-    <div id="calendar-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-gray-900">
-            <div class="bg-[#355C7D] p-4 text-white flex justify-between items-center">
-                <button id="prev-month" class="p-2">◀</button>
-                <h3 id="month-label" class="font-bold uppercase"></h3>
-                <button id="next-month" class="p-2">▶</button>
-            </div>
-            <div class="p-4">
-                <div class="grid grid-cols-7 gap-1 text-center font-bold text-gray-400 mb-2 text-xs">
-                    <div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>So</div><div>Nd</div>
+            <div class="p-8 overflow-y-auto">
+                <h2 id="doc-title" class="text-2xl font-bold mb-4 text-[#355C7D]"></h2>
+                <div id="doc-content" class="text-gray-700 leading-relaxed">
+                    <!-- Component HTML will be injected here -->
                 </div>
-                <div id="calendar-days" class="grid grid-cols-7 gap-1 text-center"></div>
-                <button id="close-calendar" class="mt-6 w-full py-2 border-2 border-[#355C7D] text-[#355C7D] font-bold rounded-lg hover:bg-[#355C7D] hover:text-white transition-all">Zamknij</button>
             </div>
         </div>
     </div>
 
-    <footer class="bg-[#222] text-white p-6 mt-10 text-center">
-        <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between gap-4">
-            <p>📍 Graniczna 11, Świętochłowice</p>
-            <p>📞 <a href="tel:516726657" class="text-yellow-400 font-bold">516726657</a></p>
-            <p>📧 wynajemka-kontakt@onet.pl</p>
-        </div>
-    </footer>
+    <!-- Hidden Storage for Astro Component HTML -->
+    <div id="source-regulamin" class="hidden">
+        <RegulaminContent />
+    </div>
+    <div id="source-umowa" class="hidden">
+        <UmowaContent />
+    </div>
 
     <script is:inline>
-        let currentMonth = new Date();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const docData = {
-            regulamin: "Tutaj wpisz swój regulamin obiektu...",
-            umowa: "Tutaj wpisz treść umowy najmu krótkoterminowego..."
-        };
-
-        // --- CALENDAR LOGIC ---
-        async function renderCalendar() {
-            let bookedDates = [];
-            try {
-                const res = await fetch('/availability.json');
-                const data = await res.json();
-                bookedDates = data.bookedDates || [];
-            } catch (e) { console.log("Availability file missing"); }
-
-            const daysContainer = document.getElementById('calendar-days');
-            const monthLabel = document.getElementById('month-label');
-            const prevBtn = document.getElementById('prev-month');
-            
-            if (!daysContainer || !monthLabel) return;
-
-            daysContainer.innerHTML = '';
-            monthLabel.innerText = currentMonth.toLocaleString('pl-PL', { month: 'long', year: 'numeric' });
-
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            let firstDay = new Date(year, month, 1).getDay();
-            firstDay = firstDay === 0 ? 6 : firstDay - 1; 
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            for (let i = 0; i < firstDay; i++) {
-                daysContainer.appendChild(document.createElement('div'));
-            }
-
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(year, month, d);
-                const dateStr = dateObj.toISOString().split('T')[0];
-                const isPast = dateObj < today;
-                const isBooked = bookedDates.includes(dateStr);
-
-                const dayEl = document.createElement('div');
-                dayEl.className = "py-3 rounded-md text-sm font-medium border ";
-                dayEl.innerText = d;
-
-                if (isPast) dayEl.className += "bg-gray-100 text-gray-400";
-                else if (isBooked) dayEl.className += "bg-red-100 text-red-700 border-red-200 line-through";
-                else dayEl.className += "bg-green-50 text-green-700 border-green-200 cursor-pointer";
-
-                daysContainer.appendChild(dayEl);
-            }
-
-            if (prevBtn) {
-                prevBtn.style.visibility = (month === today.getMonth() && year === today.getFullYear()) ? 'hidden' : 'visible';
-            }
-        }
-
-        // --- EVENT LISTENERS ---
-        document.getElementById('open-calendar')?.addEventListener('click', () => {
-            document.getElementById('calendar-modal')?.classList.remove('hidden');
-            renderCalendar();
-        });
-
-        document.getElementById('close-calendar')?.addEventListener('click', () => {
-            document.getElementById('calendar-modal')?.classList.add('hidden');
-        });
-
-        document.getElementById('next-month')?.addEventListener('click', () => {
-            currentMonth.setMonth(currentMonth.getMonth() + 1);
-            renderCalendar();
-        });
-
-        document.getElementById('prev-month')?.addEventListener('click', () => {
-            currentMonth.setMonth(currentMonth.getMonth() - 1);
-            renderCalendar();
-        });
-
-        // --- DOCUMENT MODAL LOGIC ---
+        // Updated Document Modal Logic
         function openDoc(type) {
-            document.getElementById('doc-title').innerText = type === 'regulamin' ? 'Regulamin' : 'Umowa';
-            document.getElementById('doc-content').innerText = docData[type];
+            const title = type === 'regulamin' ? 'Regulamin' : 'Umowa';
+            const sourceId = `source-${type}`;
+            const content = document.getElementById(sourceId).innerHTML;
+
+            document.getElementById('doc-title').innerText = title;
+            document.getElementById('doc-content').innerHTML = content;
             document.getElementById('doc-modal').classList.remove('hidden');
         }
 
         document.getElementById('open-regulamin')?.addEventListener('click', () => openDoc('regulamin'));
         document.getElementById('open-umowa')?.addEventListener('click', () => openDoc('umowa'));
+        
         document.getElementById('close-doc')?.addEventListener('click', () => {
             document.getElementById('doc-modal').classList.add('hidden');
         });
+
+        // Close on clicking backdrop
+        document.getElementById('doc-modal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'doc-modal') e.target.classList.add('hidden');
+        });
+
+        // ... include your renderCalendar logic here ...
     </script>
 
     <style>
+        .nav-link {
+            @apply text-gray-600 hover:text-[#355C7D] font-medium border-b-2 border-transparent hover:border-[#355C7D] transition-all cursor-pointer;
+        }
         .grid-img {
             @apply rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer;
         }
